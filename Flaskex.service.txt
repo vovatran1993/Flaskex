@@ -3,7 +3,9 @@ Description=Dummy Service
 After=multi-user.target
 
 [Service]
-ExecStart=/usr/bin/python /home/pi/myscript.py
+Type=simple
+ExecStart=/usr/bin/python /flaskex/app.py
+StandardInput=tty-force
 
 [Install]
-WantedBy=multi-user.targe
+WantedBy=multi-user.target
