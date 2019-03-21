@@ -1,28 +1,37 @@
 node {
-properties([parameters([string(defaultValue: '127.0.0.1', description: 'Please give to build IP', name: 'IP', trim: true)])])
-   
+    properties([parameters([string(defaultValue: '127.0.0.1', description: 'Please give IP to build a site', name: 'IP', trim: true)])])
     stage("Install git"){
-        sh "ssh    ec2-user@${IP}   sudo yum install git python-pip -y"
+        sh "ssh    ec2-user@${IP}         sudo yum install git python-pip  -y"
     }
     stage("Clone a repo"){
-        git 'https://github.com/sstanytska/Flaskex.git'
-    }
-    stage("Install requirements"){
-        sh "ssh ec2-user@${IP}   sudo pip install -r /tmp/requirements.txt"
+        git 'https://github.com/vovatran1993/Flaskex.git'
     }
     stage("Run App"){
-        sh "ssh ec2-user@${IP}    python /tmp/app.py"
+        try{
+            sh "ssh    ec2-user@${IP}       sudo mkdir  /flaskex 2> /dev/null"
+        }
+        catch(exc){
+            sh "echo folder exists"
+        }
     }
     stage("Copy files"){
-        sh "scp  -r * ec2-user@${IP}:/tmp/"
+        sh "scp -r *   ec2-user@${IP}:/home/ec2-user/"
     }
-    stage("Move files to /flesk"){
-        sh "ssh ec2-user@${IP}      sudo pip install -r /klask/requirements.txt"
+    stage("Move files to /flaskex"){
+        try{
+            sh "ssh    ec2-user@${IP}      sudo mv  /home/ec2-user/*  /flaskex/"
+        }
+        catch(exc){
+            sh "echo Folders moved"
+        }
     }
-    stage("Move service to /etc"){
-        sh "ssh ec2-user@${IP}      sudo /flaskex/flaskex.service /etc/system/system"
+    stage("Install requirements"){
+        sh "ssh    ec2-user@${IP}      sudo pip install -r /flaskex/requirements.txt"
+    }
+    stage("move service to /etc"){
+        sh "ssh    ec2-user@${IP}      sudo mv /flaskex/flaskex.service /etc/systemd/system"
     }
     stage("Start service"){
-        sh "ssh ssh ec2-user@${IP} sudo systemctl start flaskex"
+        sh "ssh    ec2-user@${IP}       sudo systemctl start flaskex"
     }
 }
