@@ -1,0 +1,9 @@
+[Unit]
+Description=Dummy Service
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python /home/pi/myscript.py
+
+[Install]
+WantedBy=multi-user.targe
